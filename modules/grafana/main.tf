@@ -42,7 +42,7 @@ resource "aws_iam_instance_profile" "grafana_profile" {
 
 resource "aws_instance" "grafana" {
   ami                         = "ami-0f5ee92e2d63afc18"
-  instance_type               = "t2.micro"
+  instance_type               = "t3.micro"
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.security_group]
   associate_public_ip_address = true
@@ -50,15 +50,13 @@ resource "aws_instance" "grafana" {
   iam_instance_profile = aws_iam_instance_profile.grafana_profile.name
 
   user_data = <<EOF
-#!/bin/bash
-yum install -y docker
-systemctl start docker
-
-docker run -d -p 3000:3000 \
--e GF_SECURITY_ADMIN_USER=secureadmin \
--e GF_SECURITY_ADMIN_PASSWORD=StrongPassword123 \
--e GF_AUTH_ANONYMOUS_ENABLED=false \
-grafana/grafana
+              #!/bin/bash
+              sudo yum install -y wget
+              sudo wget -q -O /etc/yum.repos.d/grafana.repo https://packages.grafana.com/enterprise/rpm/grafana-enterprise.repo
+              sudo yum install -y grafana
+              sudo systemctl daemon-reload
+              sudo systemctl start grafana-server
+              sudo systemctl enable grafana-server
 EOF
 
   tags = {

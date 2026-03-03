@@ -1,6 +1,6 @@
 provider "grafana" {
   url  = "http://${aws_instance.grafana.public_ip}:3000"
-  auth = "secureadmin:StrongPassword123"
+  auth = "admin:admin"
 }
 
 
