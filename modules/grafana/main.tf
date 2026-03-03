@@ -44,7 +44,7 @@ resource "aws_iam_instance_profile" "grafana_profile" {
 
 
 resource "aws_instance" "grafana" {
-  ami                         = "ami-0f5ee92e2d63afc18"
+  ami                         = "ami-051a31ab2f4d498f5"
   instance_type               = "t3.micro"
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.security_group]
@@ -54,16 +54,33 @@ resource "aws_instance" "grafana" {
 
   user_data = <<EOF
               #!/bin/bash
+
 dnf update -y
-dnf install -y wget
 
-wget https://dl.grafana.com/enterprise/release/grafana-enterprise-9.5.2-1.x86_64.rpm
-dnf install -y grafana-enterprise-9.5.2-1.x86_64.rpm
+dnf install -y wget curl
 
+cat <<REPO > /etc/yum.repos.d/grafana.repo
+[grafana]
+name=Grafana
+baseurl=https://rpm.grafana.com
+repo_gpgcheck=1
+enabled=1
+gpgcheck=1
+gpgkey=https://rpm.grafana.com/gpg.key
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+REPO
+
+dnf install -y grafana-enterprise
 systemctl daemon-reload
+
+
 systemctl enable grafana-server
 systemctl start grafana-server
-sleep 30
+systemctl stop firewalld || true
+
+sleep 60
+
 systemctl status grafana-server
 EOF
 
