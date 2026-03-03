@@ -3,6 +3,9 @@ terraform {
     grafana = {
       source = "grafana/grafana"
     }
+    time = {
+      source = "hashicorp/time"
+    }
   }
 }
 
@@ -51,15 +54,25 @@ resource "aws_instance" "grafana" {
 
   user_data = <<EOF
               #!/bin/bash
-              sudo yum install -y wget
-              sudo wget -q -O /etc/yum.repos.d/grafana.repo https://packages.grafana.com/enterprise/rpm/grafana-enterprise.repo
-              sudo yum install -y grafana
-              sudo systemctl daemon-reload
-              sudo systemctl start grafana-server
-              sudo systemctl enable grafana-server
+dnf update -y
+dnf install -y wget
+
+wget https://dl.grafana.com/enterprise/release/grafana-enterprise-9.5.2-1.x86_64.rpm
+dnf install -y grafana-enterprise-9.5.2-1.x86_64.rpm
+
+systemctl daemon-reload
+systemctl enable grafana-server
+systemctl start grafana-server
+sleep 30
+systemctl status grafana-server
 EOF
 
   tags = {
     Name = "Grafana-Server"
   }
+}
+
+resource "time_sleep" "wait_for_grafana" {
+  depends_on = [aws_instance.grafana]
+  create_duration = "240s"
 }
