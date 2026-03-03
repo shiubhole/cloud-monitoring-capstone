@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    grafana = {
+      source = "grafana/grafana"
+    }
+  }
+}
+
+
 variable "subnet_id" {}
 variable "security_group" {}
 variable "region" {}
