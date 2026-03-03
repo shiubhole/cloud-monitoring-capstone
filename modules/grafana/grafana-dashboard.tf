@@ -1,0 +1,50 @@
+provider "grafana" {
+  url  = "http://${aws_instance.grafana.public_ip}:3000"
+  auth = "secureadmin:StrongPassword123"
+}
+
+
+
+resource "grafana_data_source" "cloudwatch" {
+  type = "cloudwatch"
+  name = "AWS-CloudWatch"
+
+  json_data_encoded = jsonencode({
+    authType      = "default"
+    defaultRegion = var.region
+  })
+}
+
+
+
+resource "grafana_dashboard" "ec2_dashboard" {
+  config_json = jsonencode({
+    title = "EC2 Monitoring Dashboard"
+    panels = [
+      {
+        type = "timeseries"
+        title = "CPU Utilization"
+        datasource = "AWS-CloudWatch"
+        targets = [
+          {
+            namespace  = "AWS/EC2"
+            metricName = "CPUUtilization"
+            statistic  = "Average"
+          }
+        ]
+      },
+      {
+        type = "timeseries"
+        title = "Memory Usage"
+        datasource = "AWS-CloudWatch"
+        targets = [
+          {
+            namespace  = "CWAgent"
+            metricName = "mem_used_percent"
+            statistic  = "Average"
+          }
+        ]
+      }
+    ]
+  })
+}
