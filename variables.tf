@@ -16,3 +16,4 @@ variable "instances" {
 variable "alert_email" {
     description = "Email for SNS alerts"
 }
+

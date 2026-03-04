@@ -10,9 +10,6 @@ terraform {
 }
 
 
-variable "subnet_id" {}
-variable "security_group" {}
-variable "region" {}
 
 
 
@@ -47,7 +44,7 @@ resource "aws_instance" "grafana" {
   ami                         = "ami-051a31ab2f4d498f5"
   instance_type               = "t3.micro"
   subnet_id                   = var.subnet_id
-  vpc_security_group_ids      = [var.security_group]
+  vpc_security_group_ids      = [var.security_group_id]
   associate_public_ip_address = true
 
   iam_instance_profile = aws_iam_instance_profile.grafana_profile.name

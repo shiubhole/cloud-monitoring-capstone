@@ -1,10 +1,3 @@
-provider "grafana" {
-  url  = "http://${aws_instance.grafana.public_ip}:3000"
-  auth = "admin:admin"
-}
-
-
-
 resource "grafana_data_source" "cloudwatch" {
     depends_on = [time_sleep.wait_for_grafana]
 

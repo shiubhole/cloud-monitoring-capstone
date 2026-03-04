@@ -15,3 +15,8 @@ terraform {
     }
   }
 }
+
+provider "grafana" {
+  url  = "http://${module.grafana.grafana_public_ip}:3000"
+  auth = "admin:admin"
+}

@@ -32,15 +32,29 @@ module "config" {
   source = "./modules/config"
 }
 
-module "grafana" {
-  source         = "./modules/grafana"
-  subnet_id      = module.vpc.subnet_id
-  security_group = module.vpc.security_group_id
-  region         = var.region 
-}
+
 
 module "jenkins" {
   source         = "./modules/jenkins"
   subnet_id      = module.vpc.subnet_id
   security_group = module.vpc.security_group_id
+}
+
+
+module "grafana_server" {
+  source            = "./modules/grafana-server"
+  subnet_id         = module.vpc.subnet_id
+  security_group_id = module.vpc.security_group_id
+}
+
+module "grafana_config" {
+  source = "./modules/grafana-config"
+
+  region = var.region
+
+  providers = {
+    grafana = grafana
+  }
+
+  depends_on = [module.grafana_server]
 }
