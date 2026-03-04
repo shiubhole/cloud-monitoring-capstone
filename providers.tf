@@ -17,6 +17,6 @@ terraform {
 }
 
 provider "grafana" {
-  url  = "http://${module.grafana.grafana_public_ip}:3000"
+  url  = "http://${module.grafana_server.public_ip}:3000"
   auth = "admin:admin"
 }

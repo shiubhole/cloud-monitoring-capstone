@@ -54,21 +54,10 @@ resource "aws_instance" "grafana" {
 
 dnf update -y
 
-dnf install -y wget curl
-
-cat <<REPO > /etc/yum.repos.d/grafana.repo
-[grafana]
-name=Grafana
-baseurl=https://rpm.grafana.com
-repo_gpgcheck=1
-enabled=1
-gpgcheck=1
-gpgkey=https://rpm.grafana.com/gpg.key
-sslverify=1
-sslcacert=/etc/pki/tls/certs/ca-bundle.crt
-REPO
-
-dnf install -y grafana-enterprise
+dnf install -y wget 
+cd /tmp
+wget https://dl.grafana.com/oss/release/grafana-10.4.1-1.x86_64.rpm
+dnf install -y ./grafana-10.4.1-1.x86_64.rpm
 systemctl daemon-reload
 
 

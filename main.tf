@@ -48,9 +48,9 @@ module "grafana_server" {
 }
 
 module "grafana_config" {
-  source = "./modules/grafana-config"
-
-  region = var.region
+  source              = "./modules/grafana-config"
+  grafana_instance_id = module.grafana_server.grafana_instance_id
+  region              = var.region
 
   providers = {
     grafana = grafana

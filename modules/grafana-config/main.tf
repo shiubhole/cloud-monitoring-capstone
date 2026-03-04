@@ -1,3 +1,15 @@
+terraform {
+  required_providers {
+    grafana = {
+      source = "grafana/grafana"
+    }
+  }
+}
+resource "time_sleep" "wait_for_grafana" {
+  depends_on = [var.grafana_instance_id]
+
+  create_duration = "240s"
+}
 resource "grafana_data_source" "cloudwatch" {
     depends_on = [time_sleep.wait_for_grafana]
 
