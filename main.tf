@@ -51,10 +51,7 @@ module "grafana_config" {
   source              = "./modules/grafana-config"
   grafana_instance_id = module.grafana_server.grafana_instance_id
   region              = var.region
-
-  providers = {
-    grafana = grafana
-  }
-
+  grafana_public_ip   = module.grafana_server.public_ip
+  
   depends_on = [module.grafana_server]
 }
