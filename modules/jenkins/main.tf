@@ -68,8 +68,15 @@ resource "aws_ssm_association" "install_jenkins" {
       "sudo systemctl daemon-reload",
       "sudo systemctl enable jenkins",
       "sudo systemctl start jenkins",
+      "cd /tmp",
+      "wget https://github.com/jenkinsci/plugin-installation-manager-tool/releases/latest/download/jenkins-plugin-manager.jar",
+
+      "sudo java -jar /tmp/jenkins-plugin-manager.jar --war /usr/share/java/jenkins.war --plugin-download-directory /var/lib/jenkins/plugins --plugins credentials git github-api github workflow-aggregator pipeline-stage-view branch-api scm-api terraform aws-credentials",
+
+      "sudo chown -R jenkins:jenkins /var/lib/jenkins/plugins",
+      "sudo systemctl restart jenkins",
       "sudo systemctl status jenkins",
-      "sudo netstat -tulnp | grep 8080"
+      "sudo netstat -tulnp | grep 8080",
     ])
   }
 
