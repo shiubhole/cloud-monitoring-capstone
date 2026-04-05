@@ -59,7 +59,7 @@ resource "aws_ssm_association" "install_jenkins" {
       "echo 'Starting Jenkins Installation'",
       "sleep 60",
       "sudo yum update -y",
-      "sudo amazon-linux-extras install java-openjdk17 -y",
+      "sudo yum install -y java-21-amazon-corretto",
       "java -version",
       "sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo",
       "sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key",
