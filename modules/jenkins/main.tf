@@ -30,7 +30,8 @@ resource "aws_iam_instance_profile" "jenkins_profile" {
 }
 
 resource "aws_instance" "jenkins" {
-  ami                         = "ami-051a31ab2f4d498f5"
+  ami                         = "ami-015f858f67af9374d"                                                  
+  #"ami-051a31ab2f4d498f5"
   instance_type               = "t3.micro"
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.security_group]
@@ -56,6 +57,10 @@ resource "aws_ssm_association" "install_jenkins" {
 
   parameters = {
     commands = join("\n", [
+       "sudo yum install -y amazon-ssm-agent",
+      "sudo systemctl enable amazon-ssm-agent",
+      "sudo systemctl start amazon-ssm-agent",
+
       "echo 'Starting Jenkins Installation'",
       "sleep 60",
       "sudo yum update -y",
