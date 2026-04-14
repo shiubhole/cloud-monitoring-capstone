@@ -73,6 +73,11 @@ resource "aws_ssm_association" "install_jenkins" {
       "sudo systemctl daemon-reload",
       "sudo systemctl enable jenkins",
       "sudo systemctl start jenkins",
+      "echo 'Waiting for Jenkins to start'",
+      "sleep 120",
+
+      "sudo systemctl status jenkins",
+
       "cd /tmp",
       "wget https://github.com/jenkinsci/plugin-installation-manager-tool/releases/latest/download/jenkins-plugin-manager.jar",
 
