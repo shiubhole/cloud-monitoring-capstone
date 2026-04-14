@@ -32,19 +32,36 @@ resource "aws_iam_instance_profile" "jenkins_profile" {
 resource "aws_instance" "jenkins" {
   ami                         = "ami-015f858f67af9374d"                                                  
   #"ami-051a31ab2f4d498f5"
-  instance_type               = "t3.micro"
+  instance_type               = "t3.small"
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.security_group]
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.jenkins_profile.name
+  user_data = <<-EOF
+#!/bin/bash
+yum update -y
+yum install -y amazon-ssm-agent
+systemctl enable amazon-ssm-agent
+systemctl start amazon-ssm-agent
+yum install -y java-21-amazon-corretto
 
+wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+yum install -y jenkins
+
+systemctl daemon-reexec
+systemctl daemon-reload
+systemctl enable jenkins
+systemctl start jenkins
+EOF
 
   tags = { Name = "Jenkins-Server" }
 }
 
-resource "time_sleep" "wait_60_seconds" {
+resource "time_sleep" "wait_120_seconds" {
   depends_on = [aws_instance.jenkins]
-  create_duration = "60s"
+  create_duration = "120s"
 }
 
 resource "aws_ssm_association" "install_jenkins" {
@@ -57,26 +74,9 @@ resource "aws_ssm_association" "install_jenkins" {
 
   parameters = {
     commands = join("\n", [
-       "sudo yum install -y amazon-ssm-agent",
-      "sudo systemctl enable amazon-ssm-agent",
-      "sudo systemctl start amazon-ssm-agent",
-
-      "echo 'Starting Jenkins Installation'",
-      "sleep 60",
-      "sudo yum update -y",
-      "sudo yum install -y java-21-amazon-corretto",
-      "java -version",
-      "sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo",
-      "sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key",
-      "sudo yum install -y jenkins",
-      "sudo systemctl daemon-reexec",
-      "sudo systemctl daemon-reload",
-      "sudo systemctl enable jenkins",
-      "sudo systemctl start jenkins",
-      "echo 'Waiting for Jenkins to start'",
-      "sleep 120",
-
-      "sudo systemctl status jenkins",
+      "echo 'Waiting for Jenkins to be ready...'",
+      "until nc -z localhost 8080; do sleep 10; done",
+      "echo 'Jenkins is up. Installing plugins...'",
 
       "cd /tmp",
       "wget https://github.com/jenkinsci/plugin-installation-manager-tool/releases/latest/download/jenkins-plugin-manager.jar",
@@ -90,5 +90,5 @@ resource "aws_ssm_association" "install_jenkins" {
     ])
   }
 
-  depends_on = [time_sleep.wait_60_seconds]
+  depends_on = [time_sleep.wait_120_seconds]
 }
