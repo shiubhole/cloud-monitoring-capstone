@@ -4,6 +4,13 @@ agent any
 
 environment {
     AWS_DEFAULT_REGION = 'ap-south-1'
+    TF_VAR_alert_email = "shivanibhole7@gmail.com"
+    TF_VAR_instances = {
+          web1 = { instance_type = "t3.micro" },
+          web2 = { instance_type = "t3.micro" },
+          jenkins = { instance_type = "t3.small" },
+          grafana = { instance_type = "t3.micro" }
+    }
 }
 
 stages {
