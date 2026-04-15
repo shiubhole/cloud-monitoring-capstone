@@ -4,13 +4,6 @@ agent any
 
 environment {
     AWS_DEFAULT_REGION = 'ap-south-1'
-    TF_VAR_alert_email = "shivanibhole7@gmail.com"
-    TF_VAR_instances = {
-          "web1" = { "instance_type": "t3.micro" },
-          "web2" = { "instance_type": "t3.micro" },
-          "jenkins-server" = { "instance_type": "t3.small" },
-          "grafana-sserver" = { "instance_type": "t3.micro" }
-    }
 }
 
 stages {
@@ -46,14 +39,31 @@ stages {
 
     stage('Terraform Plan') {
         steps {
-            sh 'terraform plan'
+            sh 
+            terraform plan \
+            -var="alert_email=shivanibhole7@gmail.com" \
+            -var='instances={
+                web1 = {instance_type="t3.micro"},
+                web2 = {instance_type="t3.micro"},
+                jenkins-server = {instance_type="t3.small"},
+                grafana-server={instance_type="t3.micro"}
+                }'
         }
     }
 
     stage('Terraform Apply') {
         steps {
-            sh 'terraform apply -auto-approve'
+            sh 
+            terraform apply -auto-approve \
+-var="alert_email=shivanibhole7@gmail.com" \
+            -var='instances={
+                web1 = {instance_type="t3.micro"},
+                web2 = {instance_type="t3.micro"},
+                jenkins-server = {instance_type="t3.small"},
+                grafana-server={instance_type="t3.micro"}
+                }'
         }
+    
     }
 
 }
