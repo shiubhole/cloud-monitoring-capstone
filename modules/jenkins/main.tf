@@ -1,9 +1,12 @@
 variable "subnet_id" {}
 variable "security_group" {}
 
+resource "random_id" "jenkins_role" {
+  byte_length = 4
+}
 
 resource "aws_iam_role" "jenkins_ssm_role" {
-  name = "jenkins-ssm-role"
+  name = "jenkins-ssm-role-${random_id.jenkins_role.hex}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -30,13 +33,13 @@ resource "aws_iam_role_policy_attachment" "admin_policy" {
 }
 
 resource "aws_iam_instance_profile" "jenkins_profile" {
-  name = "jenkins-ssm-profile"
+  name = "jenkins-ssm-profile-${random_id.jenkins_role.hex}"
   role = aws_iam_role.jenkins_ssm_role.name
 }
 
 resource "aws_instance" "jenkins" {
   ami                         = "ami-015f858f67af9374d"                                                  
-  #"ami-051a31ab2f4d498f5"
+
   instance_type               = "t3.small"
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.security_group]
