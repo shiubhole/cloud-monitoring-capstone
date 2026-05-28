@@ -24,7 +24,7 @@ resource "aws_iam_instance_profile" "cw_profile" {
 resource "aws_instance" "app" {
   for_each = var.instances
 
-  ami                         = "ami-015f858f67af9374d"
+  ami                         = "ami-0685bcc683dadb6b9"
   instance_type               = each.value.instance_type
   subnet_id                   = var.subnet_id
   vpc_security_group_ids      = [var.security_group]
