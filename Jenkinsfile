@@ -20,13 +20,13 @@ stages {
         }
     }
 
-    stage('Terraform Init -reconfigure') {
+    stage('Terraform Init') {
         steps {
             withCredentials([[
                 $class: 'AmazonWebServicesCredentialsBinding',
                 credentialsId: 'aws-cred'
             ]]) {
-                sh 'terraform init'
+                sh 'terraform init -reconfigure'
             }
         }
     }
@@ -39,26 +39,35 @@ stages {
 
     stage('Terraform Plan') {
         steps {
+          withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-cred'
+            ]]) {
             sh  '''
             terraform plan \
-            -var="alert_email=shivanibhole7@gmail.com" \
-            -var="instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"}"
+            -var='alert_email=shivanibhole7@gmail.com' \
+            -var='instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"}}'
             '''
+            }
         }
 
     }
 
-    stage('Terraform Apply') {
-        steps {
-            sh '''
-            terraform apply -auto-approve \
-            -var="alert_email=shivanibhole7@gmail.com" \
-            -var="instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"}"
-            '''
+     stage('Terraform Apply') {
+            steps {
+                withCredentials([[
+                    $class: 'AmazonWebServicesCredentialsBinding',
+                    credentialsId: 'aws-cred'
+                ]]) {
+                    sh '''
+                    terraform apply -auto-approve \
+                    -var='alert_email=shivanibhole7@gmail.com' \
+                    -var='instances={web1={instance_type="t3.micro"},web2={instance_type="t3.micro"}}'
+                    '''
+                }
+            }
         }
     }
-
-}
 
 post {
     success {
