@@ -42,7 +42,7 @@ stages {
             sh  '''
             terraform plan \
             -var="alert_email=shivanibhole7@gmail.com" \
-            -var="instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"},jenkins-server={instance_type=\\"t3.small\\"},grafana-server={instance_type=\\"t3.micro\\"}}"
+            -var="instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"}"
             '''
         }
 
@@ -53,7 +53,7 @@ stages {
             sh '''
             terraform apply -auto-approve \
             -var="alert_email=shivanibhole7@gmail.com" \
-            -var="instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"},jenkins-server={instance_type=\\"t3.small\\"},grafana-server={instance_type=\\"t3.micro\\"}}"
+            -var="instances={web1={instance_type=\\"t3.micro\\"},web2={instance_type=\\"t3.micro\\"}"
             '''
         }
     }
