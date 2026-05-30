@@ -20,7 +20,7 @@ stages {
         }
     }
 
-    stage('Terraform Init') {
+    stage('Terraform Init -reconfigure') {
         steps {
             withCredentials([[
                 $class: 'AmazonWebServicesCredentialsBinding',
